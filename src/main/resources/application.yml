@@ -1,0 +1,14 @@
+# Make the default servlet path to this one
+server:
+  servlet:
+    context-path: /api
+  port: 8080
+
+# database
+app:
+  datasource:
+    jdbc-url: jdbc:postgresql://localhost:15432/springbootreactdb
+    username: postgres
+    password: password
+    pool-size: 10
+
