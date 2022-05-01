@@ -1,6 +1,8 @@
 package com.ismail.fullstackspringbootreact.student;
 
+import com.ismail.fullstackspringbootreact.exception.ApiRequestException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,23 +24,17 @@ public class StudentController
     @GetMapping
     public List<Student> getAllStudents()
     {
-        log.info("getAllStudents()");
-
-        if (true)
-            throw new RuntimeException("Cannot get students!");
-
-        /* timer to slow the request
-        try
-        {
-            Thread.sleep(1000L);
-        } catch (Exception e)
-        {
-        }
-        */
-
         List<Student> list = studentService.getAllStudents();
 
         return list;
+    }
+
+    @GetMapping(path = "{studentId}/courses")
+    public List<StudentCourse> getAllCoursesForStudent(@PathVariable("studentId") UUID studentId)
+    {
+        log.info("getAllCoursesForStudent() " + studentId);
+
+        return studentService.getAllCoursesForStudent(studentId);
     }
 
     @PostMapping

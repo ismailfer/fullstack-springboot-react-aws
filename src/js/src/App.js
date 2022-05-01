@@ -8,6 +8,8 @@ import Footer from './footer';
 
 import AddStudentForm from './forms/AddStudentForm';
  
+import { errorNotification } from './notfication';
+
 import { getAllStudents } from './client';
 
 import {
@@ -15,7 +17,8 @@ import {
   Avatar,
   Spin,
   Icon,
-  Modal
+  Modal,
+  Empty
 } from 'antd';
 
 /*
@@ -53,14 +56,26 @@ class App extends Component
       .then(res => res.json()
       .then(students => {
         
-        console.log(students);
+        //console.log(students);
 
         this.setState({
           students,
           isFetching: false
         });
 
-      }));
+      }))
+      .catch(error =>
+        {
+          const message = error.message;
+          const description = error.error.message;
+          
+          console.log(description);
+
+          this.setState({isFetching: false});
+
+          errorNotification(message, description);
+
+        });
 
   }
 
@@ -70,7 +85,40 @@ class App extends Component
 
     const { students, isFetching, isAddStudentModalVisible } = this.state;
 
-  
+    const commonElements = () => (
+      <div>
+        <Modal
+          title='Add new student'
+          visible={isAddStudentModalVisible}
+          onOk={this.closeAddStudentModal}
+          onCancel={this.closeAddStudentModal}
+          width={1000}
+          >
+
+            <AddStudentForm 
+               onSuccess={() => {
+                 this.closeAddStudentModal();
+                 this.fetchStudents();
+                }}
+                onFailure={(err) => {
+                    console.log(JSON.stringify(err));
+
+                    const errMsg = err.message;
+                    const errDesc = err.httpStatus;
+
+                    errorNotification(errMsg, errDesc)
+                }} 
+               />
+
+        </Modal>
+        
+        <Footer 
+          numberOfStudents={students.length}
+          handleAddStudentClickEvent={this.openAddStudentModal}
+          />          
+      </div>
+    )
+
     if (isFetching)
     {
       return (
@@ -96,6 +144,8 @@ class App extends Component
         )
       })
       */
+
+
 
       const columns = [
         {
@@ -145,34 +195,20 @@ class App extends Component
             rowKey='stude{}ntId' 
             style={{marginBottom: '100px'}}
             />
-
-          <Modal
-            title='Add new student'
-            visible={isAddStudentModalVisible}
-            onOk={this.closeAddStudentModal}
-            onCancel={this.closeAddStudentModal}
-            width={1000}
-            >
-
-              <AddStudentForm 
-                 onSuccess={() => {
-                   this.closeAddStudentModal();
-                   this.fetchStudents();
-                  }} 
-                 />
-
-          </Modal>
           
-          <Footer 
-            numberOfStudents={students.length}
-            handleAddStudentClickEvent={this.openAddStudentModal}
-            />
+          {commonElements()}
+
         </Container>
       );
 
     }
-
-    return <h1>No Students found</h1>
+ 
+    return (
+      <Container>
+        <Empty description={<h1>No students found</h1>} />
+        {commonElements()}        
+      </Container>
+    )     
 
   } 
 }

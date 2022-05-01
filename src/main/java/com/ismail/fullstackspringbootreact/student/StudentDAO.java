@@ -5,10 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -23,7 +24,7 @@ public class StudentDAO
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Student> getAllStudents()
+    List<Student> getAllStudents()
     {
         /*
         List<Student> list = List.of(
@@ -56,9 +57,10 @@ public class StudentDAO
 
     int addNewStudent(UUID studentId, Student student)
     {
+        // casting gender to gender datatype by using ::gender
         String sql = "" +
                 "INSERT INTO student (student_id, first_name, last_name, email, gender) " +
-                "VALUES ( ?, ?, ?, ?, ?)";
+                "VALUES ( ?, ?, ?, ?, ?::gender)";
 
         int updateStatus = jdbcTemplate.update(sql, studentId, student.getFirstName(), student.getLastName(), student.getEmail(), student.getGender().name()
                 .toUpperCase());
@@ -84,4 +86,53 @@ public class StudentDAO
     }
 
 
+    boolean isEmailTaken(String email)
+    {
+        String sql = "SELECT EXISTS ( SELECT 1 FROM student WHERE email = '" + email + "')";
+
+        Boolean taken = jdbcTemplate.queryForObject(sql, Boolean.class);
+
+        log.info("isEmailTaken: " + email + ": " + taken);
+
+        return taken;
+
+    }
+
+    List<StudentCourse> getAllCoursesForStudent(@PathVariable("studentId") UUID studentId)
+    {
+        String sql = "select * from student join student_course using (student_id) join course using (course_id) where student_id = ?";
+
+        return jdbcTemplate.query(
+                sql,
+                new Object[]{studentId},
+                mapStudentCourseFromDb());
+    }
+
+    private RowMapper<StudentCourse> mapStudentCourseFromDb()
+    {
+        return (resultSet, i) ->
+        {
+             //(UUID studentId, UUID courseId, LocalDate startDate, LocalDate endDate, Integer grade,
+            // String courseName, String courseDescription, String teacherName)
+
+            Integer grade = Optional.ofNullable(resultSet.getString("grade"))
+                    .map(Integer::parseInt)
+                    .orElse(null);
+
+            StudentCourse sc = new StudentCourse(
+                    UUID.fromString(resultSet.getString("student_id")),
+                    UUID.fromString(resultSet.getString("course_id")),
+                    resultSet.getDate("start_date").toLocalDate(),
+                    resultSet.getDate("end_date").toLocalDate(),
+                    grade,
+                    resultSet.getString("course_name"),
+                    resultSet.getString("description"),
+                    resultSet.getString("department"),
+                    resultSet.getString("teacher_name")
+                    );
+
+            return sc;
+
+        };
+    }
 }

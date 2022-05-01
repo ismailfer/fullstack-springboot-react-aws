@@ -8,7 +8,7 @@ const footer = (props) =>
 (
     <div className='footer'>
         <Container>
-            {props.numberOfStudents ? 
+            {props.numberOfStudents !== undefined ? 
                 <Avatar 
                     style={{backgroundColor: '#f56a00', marginRight: '5px'}} 
                     size='large'>{props.numberOfStudents}</Avatar> : null

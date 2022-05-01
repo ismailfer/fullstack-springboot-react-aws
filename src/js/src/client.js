@@ -22,7 +22,8 @@ const checkStatus = response => {
     }
     else
     {
-        let error = new Error(response.statusText);
+        var error = new Error(response.statusText);
+
         error.response = response;
 
         response.json().then(e => {
