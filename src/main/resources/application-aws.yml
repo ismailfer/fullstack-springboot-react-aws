@@ -1,0 +1,18 @@
+# this will be fetched from the pom.xml profiles/properties/spring.profiles.active section
+# and will be replaced during the build process
+# spring.profiles.active: @spring.profiles.active@
+
+# Make the default servlet path to this one
+server:
+  servlet:
+    context-path: /
+  port: 5000
+
+# database
+app:
+  datasource:
+    jdbc-url: jdbc:postgresql://fullstackspringbootreactdb.cq0lyzldp7hl.us-east-1.rds.amazonaws.com:5432/fullstackspringbootreact
+    username: ismail
+    password: password
+    pool-size: 10
+

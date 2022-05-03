@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @RestController
 // either set "api/students" here; or set spring.servlet.context-path=/api
-@RequestMapping("students")
+@RequestMapping("api/students")
 @Slf4j
 public class StudentController
 {

@@ -1,7 +1,12 @@
+# this will be fetched from the pom.xml profiles/properties/spring.profiles.active section
+# and will be replaced during the build process
+# spring.profiles.active: @spring.profiles.active@
+
+
 # Make the default servlet path to this one
 server:
   servlet:
-    context-path: /api
+    context-path: /
   port: 8080
 
 # database
