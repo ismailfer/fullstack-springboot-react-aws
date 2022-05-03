@@ -9,5 +9,5 @@
 - Docker deployment
 - Deploying to AWS Elastic Beanstalk
 
-#AWS Beanstalk: URL of the app:
+# AWS Beanstalk: URL of the app:
 http://fullstackspringbootreactaws-env.eba-mbkgpipt.us-east-1.elasticbeanstalk.com/
